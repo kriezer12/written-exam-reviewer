@@ -30,6 +30,7 @@ export const App: React.FC = () => {
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>(() => getBookmarkedIds());
   const [flashcardRatings, setFlashcardRatings] = useState<Record<number, 'known' | 'review'>>(() => getFlashcardRatings());
   const [examHistory, setExamHistory] = useState<ExamHistoryRecord[]>(() => getExamHistory());
+  const [targetPracticeQuestionId, setTargetPracticeQuestionId] = useState<number | undefined>(undefined);
 
   // Active Exam State
   const [examState, setExamState] = useState<ExamState>(() => {
@@ -241,6 +242,7 @@ export const App: React.FC = () => {
           <PracticeView
             bookmarkedIds={bookmarkedIds}
             onToggleBookmark={handleToggleBookmark}
+            initialQuestionId={targetPracticeQuestionId}
           />
         )}
 
@@ -255,6 +257,7 @@ export const App: React.FC = () => {
           <PracticeView
             bookmarkedIds={bookmarkedIds}
             onToggleBookmark={handleToggleBookmark}
+            initialQuestionId={targetPracticeQuestionId}
           />
         )}
 
@@ -264,6 +267,7 @@ export const App: React.FC = () => {
             bookmarkedIds={bookmarkedIds}
             onClearHistory={handleClearHistory}
             onSelectBookmark={(id) => {
+              setTargetPracticeQuestionId(id);
               setCurrentMode('practice');
             }}
             onRemoveBookmark={(id) => handleToggleBookmark(id)}

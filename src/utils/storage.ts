@@ -6,6 +6,32 @@ const STORAGE_KEYS = {
   BOOKMARKS: 'it_exam_bookmarks_v1',
   FLASHCARD_RATINGS: 'it_exam_flashcard_ratings_v1',
   PREFERENCES: 'it_exam_preferences_v1',
+  PRACTICE_STATE: 'it_exam_practice_state_v1',
+};
+
+export interface PracticeState {
+  selectedCategory: string;
+  filterMode: 'all' | 'saved' | 'math';
+  currentQuestionId: number;
+  userSelections: Record<number, 'A' | 'B' | 'C' | 'D'>;
+}
+
+export const getSavedPracticeState = (): PracticeState | null => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.PRACTICE_STATE);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('Failed to load practice state:', e);
+    return null;
+  }
+};
+
+export const savePracticeState = (state: PracticeState): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PRACTICE_STATE, JSON.stringify(state));
+  } catch (e) {
+    console.error('Failed to save practice state:', e);
+  }
 };
 
 export const DEFAULT_PREFERENCES: UserPreferences = {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -8,28 +8,39 @@ import {
   ChevronRight, 
   Calculator, 
   Bookmark,
-  RotateCcw,
-  Sparkles
+  Grid,
+  Sparkles,
+  Search
 } from 'lucide-react';
 import { Question, QuestionCategory } from '../types/exam';
 import { QUESTIONS } from '../data/questions';
+import { getSavedPracticeState, savePracticeState } from '../utils/storage';
 
 interface PracticeViewProps {
   bookmarkedIds: number[];
   onToggleBookmark: (id: number) => void;
+  initialQuestionId?: number;
 }
 
 export const PracticeView: React.FC<PracticeViewProps> = ({
   bookmarkedIds,
   onToggleBookmark,
+  initialQuestionId,
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-  const [filterMode, setFilterMode] = useState<'all' | 'saved' | 'math'>('all');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [userSelections, setUserSelections] = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>({});
-  const [showExplanation, setShowExplanation] = useState<Record<number, boolean>>({});
+  // Load initial saved practice state
+  const savedState = getSavedPracticeState();
 
-  // Filter questions based on controls
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    savedState?.selectedCategory || 'ALL'
+  );
+  const [filterMode, setFilterMode] = useState<'all' | 'saved' | 'math'>(
+    savedState?.filterMode || 'all'
+  );
+  const [userSelections, setUserSelections] = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>(
+    savedState?.userSelections || {}
+  );
+
+  // Filter questions based on category and mode
   const filteredQuestions = QUESTIONS.filter((q) => {
     if (selectedCategory !== 'ALL' && q.category !== selectedCategory) return false;
     if (filterMode === 'saved' && !bookmarkedIds.includes(q.id)) return false;
@@ -37,14 +48,70 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
     return true;
   });
 
-  const categories: QuestionCategory[] = Array.from(new Set(QUESTIONS.map((q) => q.category)));
+  // Track active question ID (prefer initialQuestionId, then saved state, then first item)
+  const [activeQuestionId, setActiveQuestionId] = useState<number>(() => {
+    if (initialQuestionId && QUESTIONS.some((q) => q.id === initialQuestionId)) {
+      return initialQuestionId;
+    }
+    if (savedState?.currentQuestionId && QUESTIONS.some((q) => q.id === savedState.currentQuestionId)) {
+      return savedState.currentQuestionId;
+    }
+    return QUESTIONS[0]?.id || 1;
+  });
 
-  const currentQ = filteredQuestions[currentIndex];
+  const [showGridDrawer, setShowGridDrawer] = useState(false);
+  const [jumpInput, setJumpInput] = useState('');
+
+  // Find index of active question in current filtered array
+  let activeIndex = filteredQuestions.findIndex((q) => q.id === activeQuestionId);
+  if (activeIndex === -1 && filteredQuestions.length > 0) {
+    activeIndex = 0;
+  }
+
+  const currentQ = filteredQuestions[activeIndex] || QUESTIONS.find((q) => q.id === activeQuestionId) || QUESTIONS[0];
+
+  // Auto-save practice state on change
+  useEffect(() => {
+    if (currentQ) {
+      savePracticeState({
+        selectedCategory,
+        filterMode,
+        currentQuestionId: currentQ.id,
+        userSelections,
+      });
+    }
+  }, [selectedCategory, filterMode, currentQ?.id, userSelections]);
+
+  const categories: QuestionCategory[] = Array.from(new Set(QUESTIONS.map((q) => q.category)));
 
   const handleSelectOption = (key: 'A' | 'B' | 'C' | 'D') => {
     if (!currentQ) return;
-    setUserSelections({ ...userSelections, [currentQ.id]: key });
-    setShowExplanation({ ...showExplanation, [currentQ.id]: true });
+    const updated = { ...userSelections, [currentQ.id]: key };
+    setUserSelections(updated);
+  };
+
+  const handleJumpToId = (targetId: number) => {
+    const targetQ = QUESTIONS.find((q) => q.id === targetId);
+    if (targetQ) {
+      // If target item is outside current category filter, reset category filter to ALL so it displays
+      if (selectedCategory !== 'ALL' && targetQ.category !== selectedCategory) {
+        setSelectedCategory('ALL');
+      }
+      if (filterMode === 'saved' && !bookmarkedIds.includes(targetId)) {
+        setFilterMode('all');
+      }
+      setActiveQuestionId(targetId);
+      setShowGridDrawer(false);
+      setJumpInput('');
+    }
+  };
+
+  const handleJumpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const num = parseInt(jumpInput, 10);
+    if (!isNaN(num) && num >= 1 && num <= 100) {
+      handleJumpToId(num);
+    }
   };
 
   if (!currentQ || filteredQuestions.length === 0) {
@@ -59,10 +126,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
           onClick={() => {
             setSelectedCategory('ALL');
             setFilterMode('all');
+            setActiveQuestionId(1);
           }}
           className="btn btn-primary"
         >
-          Reset Filters
+          Reset Filters & Return to Item #1
         </button>
       </div>
     );
@@ -74,29 +142,66 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const isBookmarked = bookmarkedIds.includes(currentQ.id);
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ maxWidth: '950px', margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
-      {/* Practice Header & Filter Bar */}
+      {/* Practice Header & Direct Navigation Control Bar */}
       <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Sparkles size={22} color="var(--accent-primary)" />
           <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>
-              Practice & Worked Solutions
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Practice Mode <span className="badge badge-indigo">Saved Position</span>
             </h2>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Showing {currentIndex + 1} of {filteredQuestions.length} practice items
+              Item {currentQ.id} of 100 ({activeIndex + 1} of {filteredQuestions.length} in filter)
             </span>
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Filters & Direct Jump Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          
+          {/* Quick Jump Input */}
+          <form onSubmit={handleJumpSubmit} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input
+                type="number"
+                min="1"
+                max="100"
+                placeholder="Jump # (1-100)"
+                value={jumpInput}
+                onChange={(e) => setJumpInput(e.target.value)}
+                style={{
+                  width: '130px',
+                  padding: '7px 10px 7px 30px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.85rem'
+                }}
+              />
+              <Search size={14} style={{ position: 'absolute', left: '10px', color: 'var(--text-muted)' }} />
+            </div>
+            <button type="submit" className="btn btn-secondary btn-sm">
+              Go
+            </button>
+          </form>
+
+          {/* Matrix Navigator Drawer Toggle */}
+          <button
+            onClick={() => setShowGridDrawer(!showGridDrawer)}
+            className={`btn btn-sm ${showGridDrawer ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            <Grid size={16} />
+            <span>Matrix Drawer</span>
+          </button>
+
+          {/* Category Filter Dropdown */}
           <select
             value={selectedCategory}
             onChange={(e) => {
               setSelectedCategory(e.target.value);
-              setCurrentIndex(0);
             }}
             className="btn btn-secondary btn-sm"
             style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}
@@ -107,28 +212,114 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             ))}
           </select>
 
+          {/* Mode Tabs */}
           <div style={{ display: 'flex', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', padding: '2px' }}>
             <button
-              onClick={() => { setFilterMode('all'); setCurrentIndex(0); }}
+              onClick={() => setFilterMode('all')}
               className={`btn btn-sm ${filterMode === 'all' ? 'btn-primary' : 'btn-ghost'}`}
             >
               All
             </button>
             <button
-              onClick={() => { setFilterMode('saved'); setCurrentIndex(0); }}
+              onClick={() => setFilterMode('saved')}
               className={`btn btn-sm ${filterMode === 'saved' ? 'btn-primary' : 'btn-ghost'}`}
             >
               Saved
             </button>
             <button
-              onClick={() => { setFilterMode('math'); setCurrentIndex(0); }}
+              onClick={() => setFilterMode('math')}
               className={`btn btn-sm ${filterMode === 'math' ? 'btn-primary' : 'btn-ghost'}`}
             >
-              Calculations
+              Math/Code
             </button>
           </div>
+
         </div>
       </div>
+
+      {/* Question Matrix Drawer for Direct Jumps */}
+      {showGridDrawer && (
+        <div className="glass-panel animate-fade-in" style={{ padding: '20px', border: '1px solid var(--accent-primary)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>
+              Direct Question Jump Grid (1–100)
+            </h3>
+            <div style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--color-success)' }}></span> Correct
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--color-danger)' }}></span> Missed
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--border-color)' }}></span> Unanswered
+              </span>
+            </div>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(42px, 1fr))',
+            gap: '8px',
+            maxHeight: '240px',
+            overflowY: 'auto',
+            paddingRight: '6px'
+          }}>
+            {QUESTIONS.map((q) => {
+              const userAns = userSelections[q.id];
+              const isAns = !!userAns;
+              const isRight = isAns && userAns === q.correctAnswer;
+              const isCurr = q.id === currentQ.id;
+
+              let bgColor = 'var(--bg-secondary)';
+              let textColor = 'var(--text-secondary)';
+              let borderColor = 'var(--border-color)';
+
+              if (isAns) {
+                if (isRight) {
+                  bgColor = 'var(--color-success-bg)';
+                  textColor = 'var(--color-success)';
+                  borderColor = 'rgba(16, 185, 129, 0.4)';
+                } else {
+                  bgColor = 'var(--color-danger-bg)';
+                  textColor = 'var(--color-danger)';
+                  borderColor = 'rgba(239, 68, 68, 0.4)';
+                }
+              }
+
+              if (isCurr) {
+                borderColor = 'var(--accent-primary)';
+                textColor = '#ffffff';
+              }
+
+              return (
+                <button
+                  key={q.id}
+                  onClick={() => handleJumpToId(q.id)}
+                  style={{
+                    height: '38px',
+                    borderRadius: '8px',
+                    border: `2px solid ${borderColor}`,
+                    background: bgColor,
+                    color: textColor,
+                    fontWeight: isCurr ? 800 : 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: isCurr ? '0 0 12px var(--accent-glow)' : 'none'
+                  }}
+                  title={`Item #${q.id} — ${q.category}`}
+                >
+                  {q.id}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Main Question Practice Card */}
       <div className="glass-panel animate-fade-in" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -274,20 +465,30 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       {/* Footer Navigation */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
-          onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
-          disabled={currentIndex === 0}
+          onClick={() => {
+            const prevQ = filteredQuestions[activeIndex - 1];
+            if (prevQ) setActiveQuestionId(prevQ.id);
+          }}
+          disabled={activeIndex === 0}
           className="btn btn-secondary"
-          style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}
+          style={{ opacity: activeIndex === 0 ? 0.5 : 1 }}
         >
           <ChevronLeft size={18} />
           <span>Previous Item</span>
         </button>
 
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          Use Matrix Drawer or Search bar to jump directly to any item
+        </span>
+
         <button
-          onClick={() => setCurrentIndex(Math.min(filteredQuestions.length - 1, currentIndex + 1))}
-          disabled={currentIndex === filteredQuestions.length - 1}
+          onClick={() => {
+            const nextQ = filteredQuestions[activeIndex + 1];
+            if (nextQ) setActiveQuestionId(nextQ.id);
+          }}
+          disabled={activeIndex === filteredQuestions.length - 1}
           className="btn btn-primary"
-          style={{ opacity: currentIndex === filteredQuestions.length - 1 ? 0.5 : 1 }}
+          style={{ opacity: activeIndex === filteredQuestions.length - 1 ? 0.5 : 1 }}
         >
           <span>Next Item</span>
           <ChevronRight size={18} />
