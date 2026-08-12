@@ -31,8 +31,12 @@ export type MainDomain =
   | 'Web Development'
   | 'Human-Computer Interaction';
 
+export type QuestionSetId = 'set_a' | 'set_b' | 'all';
+
 export interface Question {
   id: number;
+  numberInSet?: number;
+  setId?: 'set_a' | 'set_b';
   section: string;
   category: QuestionCategory;
   domain: MainDomain;
@@ -54,6 +58,7 @@ export type ReviewMode = 'exam' | 'practice' | 'flashcards' | 'analytics' | 'boo
 
 export interface ExamState {
   mode: ReviewMode;
+  setId: QuestionSetId;
   questions: number[]; // Question IDs for current session
   currentIndex: number;
   answers: Record<number, 'A' | 'B' | 'C' | 'D'>;
@@ -73,6 +78,7 @@ export interface ExamHistoryRecord {
   totalQuestions: number;
   timeSpentSeconds: number;
   mode: 'full' | 'quick' | 'category';
+  setId: QuestionSetId;
   categoryFilter?: string;
   domainScores: Record<MainDomain, { correct: number; total: number }>;
 }
@@ -83,4 +89,6 @@ export interface UserPreferences {
   autoAdvance: boolean;
   instantFeedback: boolean;
   timerDurationMinutes: number;
+  selectedSet: QuestionSetId;
 }
+

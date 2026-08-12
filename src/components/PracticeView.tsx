@@ -10,21 +10,26 @@ import {
   Bookmark,
   Grid,
   Sparkles,
-  Search
+  Search,
+  Library
 } from 'lucide-react';
-import { Question, QuestionCategory } from '../types/exam';
-import { QUESTIONS } from '../data/questions';
+import { Question, QuestionCategory, QuestionSetId } from '../types/exam';
+import { QUESTIONS, getQuestionsForSet, getQuestionSetLabel } from '../data/questions';
 import { getSavedPracticeState, savePracticeState } from '../utils/storage';
 
 interface PracticeViewProps {
   bookmarkedIds: number[];
   onToggleBookmark: (id: number) => void;
+  selectedSet?: QuestionSetId;
+  onSelectSet?: (set: QuestionSetId) => void;
   initialQuestionId?: number;
 }
 
 export const PracticeView: React.FC<PracticeViewProps> = ({
   bookmarkedIds,
   onToggleBookmark,
+  selectedSet = 'set_a',
+  onSelectSet,
   initialQuestionId,
 }) => {
   // Load initial saved practice state
@@ -40,23 +45,25 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
     savedState?.userSelections || {}
   );
 
+  const setQuestions = getQuestionsForSet(selectedSet);
+
   // Filter questions based on category and mode
-  const filteredQuestions = QUESTIONS.filter((q) => {
+  const filteredQuestions = setQuestions.filter((q) => {
     if (selectedCategory !== 'ALL' && q.category !== selectedCategory) return false;
     if (filterMode === 'saved' && !bookmarkedIds.includes(q.id)) return false;
     if (filterMode === 'math' && !q.calculationSteps) return false;
     return true;
   });
 
-  // Track active question ID (prefer initialQuestionId, then saved state, then first item)
+  // Track active question ID (prefer initialQuestionId, then saved state, then first item in set)
   const [activeQuestionId, setActiveQuestionId] = useState<number>(() => {
-    if (initialQuestionId && QUESTIONS.some((q) => q.id === initialQuestionId)) {
+    if (initialQuestionId && setQuestions.some((q) => q.id === initialQuestionId)) {
       return initialQuestionId;
     }
-    if (savedState?.currentQuestionId && QUESTIONS.some((q) => q.id === savedState.currentQuestionId)) {
+    if (savedState?.currentQuestionId && setQuestions.some((q) => q.id === savedState.currentQuestionId)) {
       return savedState.currentQuestionId;
     }
-    return QUESTIONS[0]?.id || 1;
+    return setQuestions[0]?.id || 1;
   });
 
   const [showGridDrawer, setShowGridDrawer] = useState(false);

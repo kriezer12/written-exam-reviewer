@@ -8,14 +8,17 @@ import {
   Sun, 
   Moon, 
   Award,
-  Zap
+  Zap,
+  Library
 } from 'lucide-react';
-import { ReviewMode, UserPreferences } from '../types/exam';
+import { QuestionSetId, ReviewMode, UserPreferences } from '../types/exam';
 import { formatTime } from '../utils/analytics';
 
 interface NavbarProps {
   currentMode: ReviewMode;
   onSelectMode: (mode: ReviewMode) => void;
+  selectedSet: QuestionSetId;
+  onSelectSet: (set: QuestionSetId) => void;
   timeRemainingSeconds: number;
   isTimedExam: boolean;
   bookmarkedCount: number;
@@ -28,6 +31,8 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   currentMode,
   onSelectMode,
+  selectedSet,
+  onSelectSet,
   timeRemainingSeconds,
   isTimedExam,
   bookmarkedCount,
@@ -37,6 +42,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   totalCount = 100,
 }) => {
   const isTimeLow = timeRemainingSeconds < 600 && timeRemainingSeconds > 0; // Less than 10 mins
+
+  const setBadgeLabel = 
+    selectedSet === 'set_a' ? 'SET A (100)' :
+    selectedSet === 'set_b' ? 'SET B (100)' : 'ALL (200)';
 
   return (
     <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', position: 'sticky', top: 0, zIndex: 50 }}>
@@ -58,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              IT Exam Reviewer <span className="badge badge-indigo">100 ITEMS</span>
+              IT Exam Reviewer <span className="badge badge-indigo">{setBadgeLabel}</span>
             </h1>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>
               Mock Exam • Local-First Saveable
@@ -66,54 +75,91 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', padding: '4px 0' }}>
-          <button
-            onClick={() => onSelectMode('exam')}
-            className={`btn btn-sm ${currentMode === 'exam' ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            <Clock size={16} />
-            <span>Mock Exam</span>
-          </button>
+        {/* Question Set Switcher & Mode Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          
+          {/* Preferred Question Set Selector */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '6px', 
+            background: 'var(--bg-secondary)', 
+            padding: '4px 10px', 
+            borderRadius: 'var(--radius-sm)', 
+            border: '1px solid var(--accent-primary)',
+            boxShadow: '0 0 10px var(--accent-glow)'
+          }}>
+            <Library size={15} style={{ color: 'var(--accent-primary)' }} />
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Set:</span>
+            <select
+              value={selectedSet}
+              onChange={(e) => onSelectSet(e.target.value as QuestionSetId)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-primary)',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                padding: '2px 4px',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="set_a" style={{ background: 'var(--bg-primary)' }}>📘 Set A (100 Items)</option>
+              <option value="set_b" style={{ background: 'var(--bg-primary)' }}>📕 Set B (100 Items)</option>
+              <option value="all" style={{ background: 'var(--bg-primary)' }}>📚 All Sets (200 Items)</option>
+            </select>
+          </div>
 
-          <button
-            onClick={() => onSelectMode('practice')}
-            className={`btn btn-sm ${currentMode === 'practice' ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            <Zap size={16} />
-            <span>Practice</span>
-          </button>
+          {/* Navigation Tabs */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', padding: '4px 0' }}>
+            <button
+              onClick={() => onSelectMode('exam')}
+              className={`btn btn-sm ${currentMode === 'exam' ? 'btn-primary' : 'btn-ghost'}`}
+            >
+              <Clock size={16} />
+              <span>Mock Exam</span>
+            </button>
 
-          <button
-            onClick={() => onSelectMode('flashcards')}
-            className={`btn btn-sm ${currentMode === 'flashcards' ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            <Layers size={16} />
-            <span>Flashcards</span>
-          </button>
+            <button
+              onClick={() => onSelectMode('practice')}
+              className={`btn btn-sm ${currentMode === 'practice' ? 'btn-primary' : 'btn-ghost'}`}
+            >
+              <Zap size={16} />
+              <span>Practice</span>
+            </button>
 
-          <button
-            onClick={() => onSelectMode('bookmarks')}
-            className={`btn btn-sm ${currentMode === 'bookmarks' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{ position: 'relative' }}
-          >
-            <Bookmark size={16} />
-            <span>Saved</span>
-            {bookmarkedCount > 0 && (
-              <span className="badge badge-indigo" style={{ padding: '1px 6px', fontSize: '0.7rem' }}>
-                {bookmarkedCount}
-              </span>
-            )}
-          </button>
+            <button
+              onClick={() => onSelectMode('flashcards')}
+              className={`btn btn-sm ${currentMode === 'flashcards' ? 'btn-primary' : 'btn-ghost'}`}
+            >
+              <Layers size={16} />
+              <span>Flashcards</span>
+            </button>
 
-          <button
-            onClick={() => onSelectMode('analytics')}
-            className={`btn btn-sm ${currentMode === 'analytics' ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            <BarChart3 size={16} />
-            <span>Analytics</span>
-          </button>
-        </nav>
+            <button
+              onClick={() => onSelectMode('bookmarks')}
+              className={`btn btn-sm ${currentMode === 'bookmarks' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ position: 'relative' }}
+            >
+              <Bookmark size={16} />
+              <span>Saved</span>
+              {bookmarkedCount > 0 && (
+                <span className="badge badge-indigo" style={{ padding: '1px 6px', fontSize: '0.7rem' }}>
+                  {bookmarkedCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => onSelectMode('analytics')}
+              className={`btn btn-sm ${currentMode === 'analytics' ? 'btn-primary' : 'btn-ghost'}`}
+            >
+              <BarChart3 size={16} />
+              <span>Analytics</span>
+            </button>
+          </nav>
+        </div>
 
         {/* Right Section: Timer & Theme Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -153,3 +199,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+

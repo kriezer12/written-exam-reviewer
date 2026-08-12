@@ -1,6 +1,6 @@
 import { Question } from '../types/exam';
 
-export const QUESTIONS: Question[] = [
+const RAW_SET_A_QUESTIONS: Question[] = [
   // Section 1: IT Fundamentals & Computing Concepts (1–4)
   {
     id: 1,
@@ -1676,3 +1676,33 @@ export const QUESTIONS: Question[] = [
     explanation: "Error prevention designs out error-prone conditions (e.g., input masks, disabled submit buttons until inputs pass validation, confirmation prompts)."
   }
 ];
+
+
+export const SET_A_QUESTIONS: Question[] = RAW_SET_A_QUESTIONS.map((q) => ({
+  ...q,
+  setId: 'set_a',
+  numberInSet: q.id,
+}));
+
+export { SET_B_QUESTIONS } from './questionsSetB';
+import { SET_B_QUESTIONS } from './questionsSetB';
+import { QuestionSetId } from '../types/exam';
+
+export const ALL_QUESTIONS: Question[] = [
+  ...SET_A_QUESTIONS,
+  ...SET_B_QUESTIONS,
+];
+
+export const QUESTIONS: Question[] = ALL_QUESTIONS;
+
+export const getQuestionsForSet = (setId: QuestionSetId): Question[] => {
+  if (setId === 'set_a') return SET_A_QUESTIONS;
+  if (setId === 'set_b') return SET_B_QUESTIONS;
+  return ALL_QUESTIONS;
+};
+
+export const getQuestionSetLabel = (setId: QuestionSetId): string => {
+  if (setId === 'set_a') return 'Exam Set A (100 Items)';
+  if (setId === 'set_b') return 'Exam Set B (100 Items)';
+  return 'All Questions (200 Items)';
+};

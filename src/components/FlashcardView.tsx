@@ -8,28 +8,32 @@ import {
   Layers,
   Sparkles
 } from 'lucide-react';
-import { QuestionCategory } from '../types/exam';
-import { QUESTIONS } from '../data/questions';
+import { QuestionCategory, QuestionSetId } from '../types/exam';
+import { QUESTIONS, getQuestionsForSet, getQuestionSetLabel } from '../data/questions';
 
 interface FlashcardViewProps {
   ratings: Record<number, 'known' | 'review'>;
   onRateCard: (id: number, rating: 'known' | 'review') => void;
+  selectedSet?: QuestionSetId;
 }
 
 export const FlashcardView: React.FC<FlashcardViewProps> = ({
   ratings,
   onRateCard,
+  selectedSet = 'set_a',
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const filteredQuestions = QUESTIONS.filter((q) => {
+  const targetQuestions = getQuestionsForSet(selectedSet);
+
+  const filteredQuestions = targetQuestions.filter((q) => {
     if (selectedCategory !== 'ALL' && q.category !== selectedCategory) return false;
     return true;
   });
 
-  const categories: QuestionCategory[] = Array.from(new Set(QUESTIONS.map((q) => q.category)));
+  const categories: QuestionCategory[] = Array.from(new Set(targetQuestions.map((q) => q.category)));
   const currentQ = filteredQuestions[currentIndex];
 
   const knownCount = Object.values(ratings).filter((r) => r === 'known').length;
@@ -98,7 +102,9 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
           {/* Card Front (Question) */}
           <div className="flip-card-front glass-panel">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="badge badge-indigo">Card #{currentQ.id} of {QUESTIONS.length}</span>
+              <span className={`badge ${currentQ.setId === 'set_b' ? 'badge-danger' : 'badge-indigo'}`}>
+                {currentQ.setId === 'set_b' ? 'Set B' : 'Set A'} Card #{currentQ.numberInSet || currentQ.id} of {targetQuestions.length}
+              </span>
               <span className="badge" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
                 {currentQ.category}
               </span>

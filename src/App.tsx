@@ -5,8 +5,8 @@ import { PracticeView } from './components/PracticeView';
 import { FlashcardView } from './components/FlashcardView';
 import { ResultsView } from './components/ResultsView';
 import { AnalyticsView } from './components/AnalyticsView';
-import { QUESTIONS } from './data/questions';
-import { ExamHistoryRecord, ExamState, ReviewMode, UserPreferences } from './types/exam';
+import { QUESTIONS, getQuestionsForSet } from './data/questions';
+import { ExamHistoryRecord, ExamState, QuestionSetId, ReviewMode, UserPreferences } from './types/exam';
 import { 
   clearActiveExamState, 
   getActiveExamState, 
@@ -32,14 +32,20 @@ export const App: React.FC = () => {
   const [examHistory, setExamHistory] = useState<ExamHistoryRecord[]>(() => getExamHistory());
   const [targetPracticeQuestionId, setTargetPracticeQuestionId] = useState<number | undefined>(undefined);
 
+  const selectedSet = preferences.selectedSet || 'set_a';
+
   // Active Exam State
   const [examState, setExamState] = useState<ExamState>(() => {
     const saved = getActiveExamState();
     if (saved) return saved;
 
+    const initialSet = preferences.selectedSet || 'set_a';
+    const initialQuestions = getQuestionsForSet(initialSet);
+
     return {
       mode: 'exam',
-      questions: QUESTIONS.map((q) => q.id),
+      setId: initialSet,
+      questions: initialQuestions.map((q) => q.id),
       currentIndex: 0,
       answers: {},
       flagged: {},
@@ -89,6 +95,30 @@ export const App: React.FC = () => {
     return () => clearInterval(timer);
   }, [examState.isTimed, examState.isCompleted, currentMode]);
 
+  // Handle Question Set Selection
+  const handleSelectSet = (newSet: QuestionSetId) => {
+    const updatedPrefs: UserPreferences = { ...preferences, selectedSet: newSet };
+    setPreferences(updatedPrefs);
+    savePreferences(updatedPrefs);
+
+    const questionsForSet = getQuestionsForSet(newSet);
+    const newExamState: ExamState = {
+      mode: 'exam',
+      setId: newSet,
+      questions: questionsForSet.map((q) => q.id),
+      currentIndex: 0,
+      answers: {},
+      flagged: {},
+      timeRemainingSeconds: preferences.timerDurationMinutes * 60,
+      isTimed: true,
+      totalTimeSeconds: preferences.timerDurationMinutes * 60,
+      isCompleted: false,
+      startTime: Date.now(),
+    };
+    setExamState(newExamState);
+    saveActiveExamState(newExamState);
+  };
+
   // Toggle Theme
   const handleToggleTheme = () => {
     const updatedTheme = preferences.theme === 'dark' ? 'light' : 'dark';
@@ -119,19 +149,23 @@ export const App: React.FC = () => {
     setBookmarkedIds(updated);
   };
 
+  // Current active question list for the current exam session
+  const activeExamQuestions = getQuestionsForSet(examState.setId || selectedSet);
+
   // Submit Exam Handler
   const handleSubmitExam = () => {
     const timeSpent = examState.totalTimeSeconds - examState.timeRemainingSeconds;
+    const currentQuestions = activeExamQuestions;
     
     // Calculate final score
     let score = 0;
-    QUESTIONS.forEach((q) => {
+    currentQuestions.forEach((q) => {
       if (examState.answers[q.id] === q.correctAnswer) {
         score++;
       }
     });
 
-    const domainPerformance = calculateDomainPerformance(examState.answers);
+    const domainPerformance = calculateDomainPerformance(examState.answers, undefined, currentQuestions);
     const domainScoresObj = domainPerformance.reduce((acc, curr) => {
       acc[curr.domain] = { correct: curr.correct, total: curr.total };
       return acc;
@@ -141,9 +175,10 @@ export const App: React.FC = () => {
       id: `exam_${Date.now()}`,
       timestamp: Date.now(),
       score,
-      totalQuestions: QUESTIONS.length,
+      totalQuestions: currentQuestions.length,
       timeSpentSeconds: timeSpent,
       mode: 'full',
+      setId: examState.setId || selectedSet,
       domainScores: domainScoresObj,
     };
 
@@ -161,9 +196,12 @@ export const App: React.FC = () => {
 
   // Retake Exam Handler
   const handleRetakeExam = () => {
+    const currentSet = examState.setId || selectedSet;
+    const questionsForSet = getQuestionsForSet(currentSet);
     const newExamState: ExamState = {
       mode: 'exam',
-      questions: QUESTIONS.map((q) => q.id),
+      setId: currentSet,
+      questions: questionsForSet.map((q) => q.id),
       currentIndex: 0,
       answers: {},
       flagged: {},
@@ -202,20 +240,22 @@ export const App: React.FC = () => {
       <Navbar
         currentMode={currentMode}
         onSelectMode={(mode) => setCurrentMode(mode)}
+        selectedSet={selectedSet}
+        onSelectSet={handleSelectSet}
         timeRemainingSeconds={examState.timeRemainingSeconds}
         isTimedExam={examState.isTimed}
         bookmarkedCount={bookmarkedIds.length}
         preferences={preferences}
         onToggleTheme={handleToggleTheme}
         answeredCount={answeredCount}
-        totalCount={QUESTIONS.length}
+        totalCount={activeExamQuestions.length}
       />
 
       <main style={{ flex: 1, paddingBottom: '40px' }}>
         {currentMode === 'exam' && (
           examState.isCompleted ? (
             <ResultsView
-              questions={QUESTIONS}
+              questions={activeExamQuestions}
               answers={examState.answers}
               flagged={examState.flagged}
               timeSpentSeconds={examState.totalTimeSeconds - examState.timeRemainingSeconds}
@@ -224,7 +264,7 @@ export const App: React.FC = () => {
             />
           ) : (
             <ExamView
-              questions={QUESTIONS}
+              questions={activeExamQuestions}
               currentIndex={examState.currentIndex}
               onNavigateIndex={(idx) => setExamState((prev) => ({ ...prev, currentIndex: idx }))}
               answers={examState.answers}
@@ -242,6 +282,8 @@ export const App: React.FC = () => {
           <PracticeView
             bookmarkedIds={bookmarkedIds}
             onToggleBookmark={handleToggleBookmark}
+            selectedSet={selectedSet}
+            onSelectSet={handleSelectSet}
             initialQuestionId={targetPracticeQuestionId}
           />
         )}
@@ -250,6 +292,7 @@ export const App: React.FC = () => {
           <FlashcardView
             ratings={flashcardRatings}
             onRateCard={handleRateCard}
+            selectedSet={selectedSet}
           />
         )}
 
@@ -257,6 +300,8 @@ export const App: React.FC = () => {
           <PracticeView
             bookmarkedIds={bookmarkedIds}
             onToggleBookmark={handleToggleBookmark}
+            selectedSet={selectedSet}
+            onSelectSet={handleSelectSet}
             initialQuestionId={targetPracticeQuestionId}
           />
         )}
@@ -265,6 +310,8 @@ export const App: React.FC = () => {
           <AnalyticsView
             history={examHistory}
             bookmarkedIds={bookmarkedIds}
+            selectedSet={selectedSet}
+            onSelectSet={handleSelectSet}
             onClearHistory={handleClearHistory}
             onSelectBookmark={(id) => {
               setTargetPracticeQuestionId(id);

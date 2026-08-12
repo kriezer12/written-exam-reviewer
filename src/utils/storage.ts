@@ -1,4 +1,4 @@
-import { ExamHistoryRecord, ExamState, UserPreferences } from '../types/exam';
+import { ExamHistoryRecord, ExamState, QuestionSetId, UserPreferences } from '../types/exam';
 
 const STORAGE_KEYS = {
   ACTIVE_EXAM: 'it_exam_active_state_v1',
@@ -11,6 +11,7 @@ const STORAGE_KEYS = {
 
 export interface PracticeState {
   selectedCategory: string;
+  selectedSet?: QuestionSetId;
   filterMode: 'all' | 'saved' | 'math';
   currentQuestionId: number;
   userSelections: Record<number, 'A' | 'B' | 'C' | 'D'>;
@@ -40,6 +41,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   autoAdvance: false,
   instantFeedback: false,
   timerDurationMinutes: 90,
+  selectedSet: 'set_a',
 };
 
 export const getSavedPreferences = (): UserPreferences => {
@@ -63,7 +65,10 @@ export const savePreferences = (prefs: UserPreferences): void => {
 export const getActiveExamState = (): ExamState | null => {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.ACTIVE_EXAM);
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    const parsed: ExamState = JSON.parse(data);
+    if (!parsed.setId) parsed.setId = 'set_a';
+    return parsed;
   } catch (e) {
     console.error('Failed to load active exam state:', e);
     return null;
@@ -111,7 +116,12 @@ export const toggleBookmarkId = (id: number): number[] => {
 export const getExamHistory = (): ExamHistoryRecord[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.EXAM_HISTORY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const list: ExamHistoryRecord[] = JSON.parse(data);
+    return list.map((record) => ({
+      ...record,
+      setId: record.setId || 'set_a',
+    }));
   } catch (e) {
     console.error('Failed to load exam history:', e);
     return [];

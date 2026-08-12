@@ -46,7 +46,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({
   const isPassed = percentage >= 70;
   const readiness = getReadinessGrade(percentage);
 
-  const domainStats = calculateDomainPerformance(answers, questions.map((q) => q.id));
+  const domainStats = calculateDomainPerformance(answers, questions.map((q) => q.id), questions);
 
   const missedQuestionIds = questions
     .filter((q) => answers[q.id] !== q.correctAnswer)

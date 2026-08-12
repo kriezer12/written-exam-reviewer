@@ -56,8 +56,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
       {/* Top Controller Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span className="badge badge-indigo" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-            Question {currentIndex + 1} of {totalQuestions}
+          <span className={`badge ${currentQ.setId === 'set_b' ? 'badge-danger' : 'badge-indigo'}`} style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
+            {currentQ.setId === 'set_b' ? 'Set B' : 'Set A'} • Q{currentIndex + 1} of {totalQuestions}
           </span>
           <span className="badge" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
             {currentQ.domain}

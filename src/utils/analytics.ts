@@ -20,11 +20,13 @@ export const ALL_DOMAINS: MainDomain[] = [
 
 export const calculateDomainPerformance = (
   answers: Record<number, 'A' | 'B' | 'C' | 'D'>,
-  questionIds?: number[]
+  questionIds?: number[],
+  customQuestions?: Question[]
 ): DomainStat[] => {
+  const baseList = customQuestions || QUESTIONS;
   const targetQuestions = questionIds
-    ? QUESTIONS.filter((q) => questionIds.includes(q.id))
-    : QUESTIONS;
+    ? baseList.filter((q) => questionIds.includes(q.id))
+    : baseList;
 
   const domainMap: Record<MainDomain, { correct: number; total: number }> = {
     'IT Fundamentals & Laws': { correct: 0, total: 0 },
