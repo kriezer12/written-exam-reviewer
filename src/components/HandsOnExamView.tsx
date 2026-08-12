@@ -575,10 +575,78 @@ const NormalizationActivity: React.FC = () => {
     return matched;
   };
 
-  const hints: Record<string, string> = {
-    '1nf': '💡 Hint: In 1NF, the table should already have atomic values (no repeating groups or multi-valued attributes). The given table already satisfies 1NF! Keep all columns in a single table with a composite key of (StudentID, CourseID).',
-    '2nf': '💡 Hint: In 2NF, remove partial dependencies. StudentName and StudentAddress depend only on StudentID (not the full key). CourseName, InstructorID, etc. depend only on CourseID. Separate into: Student(StudentID → ...), Course(CourseID → ...), Registration(StudentID, CourseID → Grade, Semester).',
-    '3nf': '💡 Hint: In 3NF, remove transitive dependencies. InstructorName and InstructorDept depend on InstructorID, not directly on CourseID. Pull Instructor into its own table. Keep Course with just CourseID, CourseName, and InstructorID as foreign key.',
+  const hintContent = (step: string) => {
+    if (step === '1nf') return (
+      <div>
+        <p style={{ marginBottom: '10px' }}>
+          <strong>📘 Answer Key — 1NF:</strong> The given table already has atomic values (no multi-valued or repeating group columns). It already satisfies 1NF as-is!
+        </p>
+        <p style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>You need <strong>1 table</strong>. Keep everything in one table with a composite primary key of (StudentID, CourseID):</p>
+        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+          <div>📋 <strong style={{ color: '#818cf8' }}>Table Name:</strong> <span style={{ color: '#34d399' }}>StudentCourseRegistration</span></div>
+          <div style={{ marginTop: '6px' }}>📦 <strong style={{ color: '#818cf8' }}>Columns:</strong></div>
+          <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>
+            StudentID, StudentName, StudentAddress, CourseID, CourseName, InstructorID, InstructorName, InstructorDept, Grade, Semester
+          </div>
+          <div style={{ marginTop: '6px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            (All 10 columns — select every column for this single table)
+          </div>
+        </div>
+      </div>
+    );
+    if (step === '2nf') return (
+      <div>
+        <p style={{ marginBottom: '10px' }}>
+          <strong>📘 Answer Key — 2NF:</strong> Remove partial dependencies. Attributes that depend on only part of the composite key (StudentID, CourseID) must be moved to their own tables.
+        </p>
+        <p style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>You need <strong>3 tables</strong>:</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 1:</strong> <span style={{ color: '#34d399' }}>Student</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>StudentID, StudentName, StudentAddress</div>
+            <div style={{ paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>↳ These depend only on StudentID</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 2:</strong> <span style={{ color: '#34d399' }}>Course</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>CourseID, CourseName, InstructorID, InstructorName, InstructorDept</div>
+            <div style={{ paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>↳ These depend only on CourseID</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 3:</strong> <span style={{ color: '#34d399' }}>Registration</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>StudentID, CourseID, Grade, Semester</div>
+            <div style={{ paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>↳ These depend on the full composite key (StudentID + CourseID)</div>
+          </div>
+        </div>
+      </div>
+    );
+    return (
+      <div>
+        <p style={{ marginBottom: '10px' }}>
+          <strong>📘 Answer Key — 3NF:</strong> Remove transitive dependencies. InstructorName and InstructorDept depend on InstructorID (not directly on CourseID), so they must be extracted into a separate Instructor table.
+        </p>
+        <p style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>You need <strong>4 tables</strong>:</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 1:</strong> <span style={{ color: '#34d399' }}>Student</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>StudentID, StudentName, StudentAddress</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 2:</strong> <span style={{ color: '#34d399' }}>Course</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>CourseID, CourseName, InstructorID</div>
+            <div style={{ paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>↳ InstructorID kept as foreign key only</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 3:</strong> <span style={{ color: '#34d399' }}>Instructor</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>InstructorID, InstructorName, InstructorDept</div>
+            <div style={{ paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>↳ Extracted from Course to remove transitive dependency</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px 16px', borderRadius: '8px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', lineHeight: 1.8 }}>
+            <div>📋 <strong style={{ color: '#818cf8' }}>Table 4:</strong> <span style={{ color: '#34d399' }}>Registration</span></div>
+            <div style={{ paddingLeft: '16px', color: '#fbbf24' }}>StudentID, CourseID, Grade, Semester</div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -678,16 +746,16 @@ const NormalizationActivity: React.FC = () => {
               style={{ marginTop: '12px' }}
             >
               {showHints[currentStep] ? <EyeOff size={14} /> : <Eye size={14} />}
-              <span>{showHints[currentStep] ? 'Hide Hint' : 'Show Hint'}</span>
+              <span>{showHints[currentStep] ? 'Hide Answer Key' : 'Show Answer Key'}</span>
             </button>
 
             {showHints[currentStep] && (
               <div style={{
-                marginTop: '12px', padding: '14px', borderRadius: 'var(--radius-sm)',
-                background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)',
-                color: '#fbbf24', fontSize: '0.88rem', lineHeight: 1.6,
+                marginTop: '12px', padding: '16px', borderRadius: 'var(--radius-sm)',
+                background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.3)',
+                fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-primary)',
               }}>
-                {hints[currentStep]}
+                {hintContent(currentStep)}
               </div>
             )}
           </div>
