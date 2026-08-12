@@ -372,7 +372,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
         </div>
       </div>
 
-      {/* Navigation Bar */}
+      {/* Desktop & Default Bottom Navigation Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <button
           onClick={() => onNavigateIndex(currentIndex - 1)}
@@ -399,6 +399,36 @@ export const ExamView: React.FC<ExamViewProps> = ({
         </button>
       </div>
 
+      {/* Floating Sticky Mobile Toolbar for Thumb-friendly Navigation */}
+      <div className="mobile-sticky-bottom-bar">
+        <button
+          onClick={() => onNavigateIndex(currentIndex - 1)}
+          disabled={currentIndex === 0}
+          className="btn btn-secondary btn-sm"
+          style={{ opacity: currentIndex === 0 ? 0.4 : 1, padding: '8px 12px' }}
+        >
+          <ChevronLeft size={18} /> Prev
+        </button>
+
+        <button
+          onClick={() => setShowGridDrawer(!showGridDrawer)}
+          className="btn btn-ghost btn-sm"
+          style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--accent-primary)' }}
+        >
+          <Grid size={16} /> Q{currentIndex + 1}/{totalQuestions}
+        </button>
+
+        <button
+          onClick={() => onNavigateIndex(currentIndex + 1)}
+          disabled={currentIndex === totalQuestions - 1}
+          className="btn btn-primary btn-sm"
+          style={{ opacity: currentIndex === totalQuestions - 1 ? 0.4 : 1, padding: '8px 14px' }}
+        >
+          Next <ChevronRight size={18} />
+        </button>
+      </div>
+
     </div>
   );
 };
+

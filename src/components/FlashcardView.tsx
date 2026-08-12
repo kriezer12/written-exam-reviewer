@@ -140,7 +140,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
                 {currentQ.question}
               </h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="flip-card-front-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {(['A', 'B', 'C', 'D'] as const).map((key) => (
                   <div key={key} style={{
                     padding: '10px 14px',
@@ -195,7 +195,7 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
         </div>
       </div>
 
-      {/* Self Assessment & Controls */}
+      {/* Self Assessment & Desktop Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <button onClick={handlePrev} className="btn btn-secondary">
           <ChevronLeft size={18} /> Prev Card
@@ -231,6 +231,48 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
         </button>
       </div>
 
+      {/* Sticky Mobile Navigation for Flashcards */}
+      <div className="mobile-sticky-bottom-bar">
+        <button onClick={handlePrev} className="btn btn-secondary btn-sm" style={{ padding: '8px 10px' }}>
+          <ChevronLeft size={16} /> Prev
+        </button>
+
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRateCard(currentQ.id, 'review');
+              handleNext();
+            }}
+            className={`btn btn-sm ${currentRating === 'review' ? 'btn-danger' : 'btn-secondary'}`}
+            style={{ padding: '6px 10px', fontSize: '0.78rem' }}
+          >
+            Review
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRateCard(currentQ.id, 'known');
+              handleNext();
+            }}
+            className={`btn btn-sm ${currentRating === 'known' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ 
+              padding: '6px 10px', 
+              fontSize: '0.78rem',
+              background: currentRating === 'known' ? 'var(--color-success)' : undefined 
+            }}
+          >
+            Got It!
+          </button>
+        </div>
+
+        <button onClick={handleNext} className="btn btn-primary btn-sm" style={{ padding: '8px 10px' }}>
+          Next <ChevronRight size={16} />
+        </button>
+      </div>
+
     </div>
   );
 };
+

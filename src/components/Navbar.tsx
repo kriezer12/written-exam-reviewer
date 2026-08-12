@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   BookOpen, 
   Clock, 
@@ -10,7 +10,9 @@ import {
   Award,
   Zap,
   Library,
-  Wrench
+  Wrench,
+  Menu,
+  X
 } from 'lucide-react';
 import { QuestionSetId, ReviewMode, UserPreferences } from '../types/exam';
 import { formatTime } from '../utils/analytics';
@@ -42,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   answeredCount = 0,
   totalCount = 100,
 }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isTimeLow = timeRemainingSeconds < 600 && timeRemainingSeconds > 0; // Less than 10 mins
 
   const setBadgeLabel = 
@@ -49,38 +52,44 @@ export const Navbar: React.FC<NavbarProps> = ({
     selectedSet === 'set_b' ? 'SET B (100)' :
     selectedSet === 'set_c' ? 'SET C (100)' : 'ALL (300)';
 
+  const handleNavClick = (mode: ReviewMode) => {
+    onSelectMode(mode);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
         
         {/* Brand / Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => onSelectMode('exam')}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => handleNavClick('exam')}>
           <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '12px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
             background: 'var(--accent-gradient)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px var(--accent-glow)'
+            boxShadow: '0 4px 12px var(--accent-glow)',
+            flexShrink: 0
           }}>
-            <Award size={24} color="#ffffff" />
+            <Award size={22} color="#ffffff" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              IT Exam Reviewer <span className="badge badge-indigo">{setBadgeLabel}</span>
+            <h1 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              IT Exam Reviewer <span className="badge badge-indigo" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>{setBadgeLabel}</span>
             </h1>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>
-              Mock Exam • Local-First Saveable
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: 0 }}>
+              Mock Exam • Local-First
             </p>
           </div>
         </div>
 
-        {/* Question Set Switcher & Mode Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        {/* Desktop View Navigation */}
+        <div className="desktop-only" style={{ alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           
-          {/* Preferred Question Set Selector */}
+          {/* Question Set Selector */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -117,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Navigation Tabs */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', padding: '4px 0' }}>
             <button
-              onClick={() => onSelectMode('exam')}
+              onClick={() => handleNavClick('exam')}
               className={`btn btn-sm ${currentMode === 'exam' ? 'btn-primary' : 'btn-ghost'}`}
             >
               <Clock size={16} />
@@ -125,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onSelectMode('practice')}
+              onClick={() => handleNavClick('practice')}
               className={`btn btn-sm ${currentMode === 'practice' ? 'btn-primary' : 'btn-ghost'}`}
             >
               <Zap size={16} />
@@ -133,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onSelectMode('flashcards')}
+              onClick={() => handleNavClick('flashcards')}
               className={`btn btn-sm ${currentMode === 'flashcards' ? 'btn-primary' : 'btn-ghost'}`}
             >
               <Layers size={16} />
@@ -141,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onSelectMode('bookmarks')}
+              onClick={() => handleNavClick('bookmarks')}
               className={`btn btn-sm ${currentMode === 'bookmarks' ? 'btn-primary' : 'btn-ghost'}`}
               style={{ position: 'relative' }}
             >
@@ -155,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onSelectMode('analytics')}
+              onClick={() => handleNavClick('analytics')}
               className={`btn btn-sm ${currentMode === 'analytics' ? 'btn-primary' : 'btn-ghost'}`}
             >
               <BarChart3 size={16} />
@@ -163,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => onSelectMode('hands-on')}
+              onClick={() => handleNavClick('hands-on')}
               className={`btn btn-sm ${currentMode === 'hands-on' ? 'btn-primary' : 'btn-ghost'}`}
               style={currentMode === 'hands-on' ? { background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%)' } : {}}
             >
@@ -173,14 +182,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
         </div>
 
-        {/* Right Section: Timer & Theme Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Right Header Section: Timer, Progress & Theme/Menu Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {isTimedExam && currentMode === 'exam' && (
             <div 
               className={`badge ${isTimeLow ? 'badge-danger pulse-glow' : 'badge-indigo'}`}
-              style={{ padding: '8px 14px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ padding: '6px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              <Clock size={16} />
+              <Clock size={14} />
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
                 {formatTime(timeRemainingSeconds)}
               </span>
@@ -188,16 +197,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {currentMode === 'exam' && totalCount > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div className="desktop-only" style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                 Progress: {answeredCount}/{totalCount}
               </span>
-              <div style={{ width: '100px', height: '6px', background: 'var(--border-color)', borderRadius: '3px', overflow: 'hidden', marginTop: '4px' }}>
+              <div style={{ width: '90px', height: '6px', background: 'var(--border-color)', borderRadius: '3px', overflow: 'hidden', marginTop: '4px' }}>
                 <div style={{ width: `${(answeredCount / totalCount) * 100}%`, height: '100%', background: 'var(--accent-gradient)', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           )}
 
+          {/* Theme Toggle Button */}
           <button
             onClick={onToggleTheme}
             className="btn btn-ghost btn-sm"
@@ -206,9 +216,153 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {preferences.theme === 'dark' ? <Sun size={18} color="#f59e0b" /> : <Moon size={18} color="#6366f1" />}
           </button>
+
+          {/* Mobile Hamburger Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="btn btn-secondary btn-sm mobile-only"
+            title="Open Mobile Navigation Menu"
+            style={{ width: '40px', height: '40px', padding: 0 }}
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
+
       </div>
+
+      {/* Mobile Navigation Drawer Dropdown */}
+      {mobileMenuOpen && (
+        <div className="mobile-nav-drawer">
+          {/* Question Set Selection on Mobile */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            background: 'var(--bg-secondary)',
+            padding: '12px',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-highlight)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
+              <Library size={16} /> Select Question Set:
+            </div>
+            <select
+              value={selectedSet}
+              onChange={(e) => {
+                onSelectSet(e.target.value as QuestionSetId);
+                setMobileMenuOpen(false);
+              }}
+              style={{
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                padding: '10px',
+                borderRadius: '8px',
+                width: '100%',
+                outline: 'none',
+              }}
+            >
+              <option value="set_a">📘 Set A (100 Items - Fundamentals & Systems)</option>
+              <option value="set_b">📕 Set B (100 Items - Advanced Tech & Arch)</option>
+              <option value="set_c">📗 Set C (100 Items - Modern Web & Cloud)</option>
+              <option value="all">📚 All Sets (300 Total Items)</option>
+            </select>
+          </div>
+
+          {/* Mobile Navigation Links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button
+              onClick={() => handleNavClick('exam')}
+              className={`btn ${currentMode === 'exam' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+            >
+              <Clock size={18} />
+              <span>Mock Exam Session</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick('practice')}
+              className={`btn ${currentMode === 'practice' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+            >
+              <Zap size={18} />
+              <span>Practice Mode</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick('flashcards')}
+              className={`btn ${currentMode === 'flashcards' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+            >
+              <Layers size={18} />
+              <span>Flashcards</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick('bookmarks')}
+              className={`btn ${currentMode === 'bookmarks' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ justifyContent: 'space-between', width: '100%', padding: '12px 16px' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Bookmark size={18} />
+                <span>Saved Bookmarks</span>
+              </div>
+              {bookmarkedCount > 0 && (
+                <span className="badge badge-indigo" style={{ fontSize: '0.75rem' }}>
+                  {bookmarkedCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => handleNavClick('analytics')}
+              className={`btn ${currentMode === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+            >
+              <BarChart3 size={18} />
+              <span>Analytics & Progress</span>
+            </button>
+
+            <button
+              onClick={() => handleNavClick('hands-on')}
+              className={`btn ${currentMode === 'hands-on' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ 
+                justifyContent: 'flex-start', 
+                width: '100%', 
+                padding: '12px 16px',
+                background: currentMode === 'hands-on' ? 'linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%)' : undefined 
+              }}
+            >
+              <Wrench size={18} />
+              <span>Hands-on Lab</span>
+            </button>
+          </div>
+
+          {/* Exam Progress Summary on Mobile */}
+          {currentMode === 'exam' && totalCount > 0 && (
+            <div style={{
+              background: 'var(--bg-secondary)',
+              padding: '12px 16px',
+              borderRadius: 'var(--radius-sm)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
+                <span>Exam Progress</span>
+                <span style={{ color: 'var(--accent-primary)' }}>{answeredCount}/{totalCount} Answered</span>
+              </div>
+              <div style={{ width: '100%', height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${(answeredCount / totalCount) * 100}%`, height: '100%', background: 'var(--accent-gradient)', transition: 'width 0.3s ease' }} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 };
+
 

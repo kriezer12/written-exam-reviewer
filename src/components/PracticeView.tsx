@@ -499,7 +499,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       </div>
 
       {/* Footer Navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <button
           onClick={() => {
             const prevQ = filteredQuestions[activeIndex - 1];
@@ -531,6 +531,42 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </button>
       </div>
 
+      {/* Floating Mobile Bottom Toolbar for Practice Mode */}
+      <div className="mobile-sticky-bottom-bar">
+        <button
+          onClick={() => {
+            const prevQ = filteredQuestions[activeIndex - 1];
+            if (prevQ) setActiveQuestionId(prevQ.id);
+          }}
+          disabled={activeIndex === 0}
+          className="btn btn-secondary btn-sm"
+          style={{ opacity: activeIndex === 0 ? 0.4 : 1, padding: '8px 12px' }}
+        >
+          <ChevronLeft size={18} /> Prev
+        </button>
+
+        <button
+          onClick={() => setShowGridDrawer(!showGridDrawer)}
+          className="btn btn-ghost btn-sm"
+          style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--accent-primary)' }}
+        >
+          <Grid size={16} /> Item {currentQ.numberInSet || currentQ.id}/{setQuestions.length}
+        </button>
+
+        <button
+          onClick={() => {
+            const nextQ = filteredQuestions[activeIndex + 1];
+            if (nextQ) setActiveQuestionId(nextQ.id);
+          }}
+          disabled={activeIndex === filteredQuestions.length - 1}
+          className="btn btn-primary btn-sm"
+          style={{ opacity: activeIndex === filteredQuestions.length - 1 ? 0.4 : 1, padding: '8px 14px' }}
+        >
+          Next <ChevronRight size={18} />
+        </button>
+      </div>
+
     </div>
   );
 };
+
