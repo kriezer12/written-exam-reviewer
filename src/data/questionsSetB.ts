@@ -1012,12 +1012,11 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "36"
     },
     "correctAnswer": "A",
-    "explanation": "Combinations formula C(n, r) = n! / (r! (n - r)!). For C(6, 3) = 6! / (3! × 3!) = (6 × 5 × 4) / (3 × 2 × 1) = 120 / 6 = 20.",
+    "explanation": "Combinations formula C(n, r) = n! / (r! (n - r)!). For C(6, 2) = 6! / (2! × 4!) = (6 × 5) / (2 × 1) = 15.",
     "calculationSteps": [
-      "C(6, 3) = 6! / (3! × (6-3)!)",
-      "C(6, 3) = 6! / (3! × 3!)",
-      "C(6, 3) = (6 × 5 × 4) / (3 × 2 × 1)",
-      "C(6, 3) = 120 / 6 = 20"
+      "C(6, 2) = 6! / (2! × (6-2)!)",
+      "C(6, 2) = 6! / (2! × 4!)",
+      "C(6, 2) = (6 × 5) / (2 × 1) = 30 / 2 = 15"
     ],
     "hasMath": true
   },
@@ -1036,7 +1035,13 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "26,000"
     },
     "correctAnswer": "A",
-    "explanation": "The Pigeonhole Principle states that if k + 1 or more objects are placed into k boxes, then at least one box must contain 2 or more objects. (10 pigeons in 9 holes -> at least one hole has >= 2)."
+    "explanation": "By the Rule of Product, there are 26 choices for each of the 3 letter positions and 10 choices for each of the 3 digit positions: 26 × 26 × 26 × 10 × 10 × 10 = 17,576,000.",
+    "calculationSteps": [
+      "Letters: 26³ = 26 × 26 × 26 = 17,576 choices",
+      "Digits: 10³ = 10 × 10 × 10 = 1,000 choices",
+      "Total license plates = 17,576 × 1,000 = 17,576,000"
+    ],
+    "hasMath": true
   },
   {
     "id": 156,
@@ -1053,10 +1058,11 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "10"
     },
     "correctAnswer": "A",
-    "explanation": "The word 'CAT' has 3 unique letters. Number of distinct permutations = 3! = 3 × 2 × 1 = 6.",
+    "explanation": "Multiplication Principle (Rule of Product): 5 shirt designs × 3 sizes = 15 unique combinations.",
     "calculationSteps": [
-      "Length of word = 3 unique characters",
-      "Permutations = 3! = 3 × 2 × 1 = 6"
+      "Design choices = 5",
+      "Size choices = 3",
+      "Total combinations = 5 × 3 = 15"
     ],
     "hasMath": true
   },
@@ -1075,10 +1081,10 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "8"
     },
     "correctAnswer": "B",
-    "explanation": "A binary string of length n has 2^n possible combinations. For length 5: 2^5 = 32 distinct binary strings.",
+    "explanation": "The number of ways to arrange n distinct items in order is n!. For 4 books: 4! = 4 × 3 × 2 × 1 = 24.",
     "calculationSteps": [
-      "Each position has 2 options (0 or 1)",
-      "For length 5: 2 × 2 × 2 × 2 × 2 = 2^5 = 32"
+      "Number of distinct items n = 4",
+      "Arrangements = 4! = 4 × 3 × 2 × 1 = 24"
     ],
     "hasMath": true
   },
@@ -1089,7 +1095,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is C ∪ D?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is C ∪ D?",
     "options": {
       "A": "{2,4,6,8,10,12}",
       "B": "{4,8}",
@@ -1097,12 +1103,12 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "{12}"
     },
     "correctAnswer": "A",
-    "explanation": "Intersection A ∩ B contains elements present in BOTH sets. A = {1, 2, 3}, B = {3, 4, 5}. Common element is {3}.",
+    "explanation": "The union C ∪ D combines all unique elements present in set C or set D. Combining {2, 4, 6, 8, 10} and {4, 8, 12} gives {2, 4, 6, 8, 10, 12}.",
     "calculationSteps": [
-      "Set A = {1, 2, 3}",
-      "Set B = {3, 4, 5}",
-      "Elements in both A and B: {3}",
-      "A ∩ B = {3}"
+      "C = {2, 4, 6, 8, 10}",
+      "D = {4, 8, 12}",
+      "Combine all unique elements: {2, 4, 6, 8, 10, 12}",
+      "C ∪ D = {2, 4, 6, 8, 10, 12}"
     ],
     "hasMath": true
   },
@@ -1113,7 +1119,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is C ∩ D?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is C ∩ D?",
     "options": {
       "A": "{4,8}",
       "B": "{2,6,10}",
@@ -1121,12 +1127,12 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "{ } (empty set)"
     },
     "correctAnswer": "A",
-    "explanation": "Union A ∪ B combines all unique elements from both sets. A = {1, 2, 3}, B = {3, 4, 5}. Combined unique elements: {1, 2, 3, 4, 5}.",
+    "explanation": "The intersection C ∩ D contains elements that belong to BOTH C and D. Elements present in both sets are 4 and 8.",
     "calculationSteps": [
-      "Set A = {1, 2, 3}",
-      "Set B = {3, 4, 5}",
-      "Combine unique elements: {1, 2, 3, 4, 5}",
-      "A ∪ B = {1, 2, 3, 4, 5}"
+      "C = {2, 4, 6, 8, 10}",
+      "D = {4, 8, 12}",
+      "Elements present in both C and D: {4, 8}",
+      "C ∩ D = {4, 8}"
     ],
     "hasMath": true
   },
@@ -1137,7 +1143,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is C − D?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is C − D?",
     "options": {
       "A": "{2,6,10}",
       "B": "{4,8}",
@@ -1145,12 +1151,12 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "{2,4,6,8,10}"
     },
     "correctAnswer": "A",
-    "explanation": "Set difference A \\ B contains elements in A that are NOT in B. A = {1, 2, 3}, B = {3, 4, 5}. Removing 3 from A leaves {1, 2}.",
+    "explanation": "The set difference C − D contains elements in C that are NOT in D. Starting with C = {2, 4, 6, 8, 10} and removing elements in D ({4, 8}) leaves {2, 6, 10}.",
     "calculationSteps": [
-      "Set A = {1, 2, 3}",
-      "Set B = {3, 4, 5}",
-      "Remove elements of B from A: remove 3",
-      "A \\ B = {1, 2}"
+      "C = {2, 4, 6, 8, 10}",
+      "D = {4, 8, 12}",
+      "Remove elements of D ({4, 8}) from C: {2, 4, 6, 8, 10} \\ {4, 8}",
+      "C − D = {2, 6, 10}"
     ],
     "hasMath": true
   },
@@ -1161,7 +1167,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is D − C?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is D − C?",
     "options": {
       "A": "{12}",
       "B": "{2,6,10}",
@@ -1169,11 +1175,12 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "{ }"
     },
     "correctAnswer": "A",
-    "explanation": "Complement A' contains all elements in Universal Set U that are NOT in A. U = {1,2,3,4,5}, A = {1,2}. Complement A' = {3, 4, 5}.",
+    "explanation": "The set difference D − C contains elements in D that are NOT in C. Starting with D = {4, 8, 12} and removing elements in C ({4, 8}) leaves {12}.",
     "calculationSteps": [
-      "U = {1, 2, 3, 4, 5}",
-      "A = {1, 2}",
-      "A' = U \\ A = {3, 4, 5}"
+      "D = {4, 8, 12}",
+      "C = {2, 4, 6, 8, 10}",
+      "Remove elements of C ({4, 8}) from D: {4, 8, 12} \\ {4, 8}",
+      "D − C = {12}"
     ],
     "hasMath": true
   },
@@ -1184,7 +1191,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is D′ (the complement of D)?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is D′ (the complement of D)?",
     "options": {
       "A": "{1,2,3,5,6,7,9,10,11}",
       "B": "{4,8,12}",
@@ -1192,10 +1199,11 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "{ }"
     },
     "correctAnswer": "A",
-    "explanation": "The power set P(S) is the set of all subsets. If |S| = n, then |P(S)| = 2^n. For n = 3, 2^3 = 8 subsets.",
+    "explanation": "The complement D′ contains all elements in universal set U that are NOT in D. Removing {4, 8, 12} from U = {1..12} leaves {1, 2, 3, 5, 6, 7, 9, 10, 11}.",
     "calculationSteps": [
-      "Number of elements n = 3",
-      "Power set cardinality = 2^n = 2^3 = 8 subsets"
+      "Universal Set U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}",
+      "Set D = {4, 8, 12}",
+      "D′ = U \\ D = {1, 2, 3, 5, 6, 7, 9, 10, 11}"
     ],
     "hasMath": true
   },
@@ -1206,7 +1214,7 @@ export const SET_B_QUESTIONS: Question[] = [
     "section": "Section 14: Discrete Structures — Set Operations",
     "category": "Discrete Structures — Set Operations",
     "domain": "Discrete Mathematics",
-    "question": "What is |C ∪ D| (the cardinality of C ∪ D)?",
+    "question": "Given sets: U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, C = {2, 4, 6, 8, 10}, and D = {4, 8, 12}.\nWhat is |C ∪ D| (the cardinality of C ∪ D)?",
     "options": {
       "A": "6",
       "B": "5",
@@ -1214,7 +1222,13 @@ export const SET_B_QUESTIONS: Question[] = [
       "D": "7"
     },
     "correctAnswer": "A",
-    "explanation": "Two sets A and B are disjoint if they share no common elements, meaning their intersection is the empty set: A ∩ B = ∅."
+    "explanation": "Cardinality |S| is the count of elements in set S. Since C ∪ D = {2, 4, 6, 8, 10, 12}, there are 6 elements in total. Thus |C ∪ D| = 6.",
+    "calculationSteps": [
+      "C ∪ D = {2, 4, 6, 8, 10, 12}",
+      "Count the number of elements in C ∪ D: 6 elements",
+      "|C ∪ D| = 6"
+    ],
+    "hasMath": true
   },
   {
     "id": 164,

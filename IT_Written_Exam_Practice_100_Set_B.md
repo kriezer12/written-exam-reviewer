@@ -400,44 +400,46 @@ D. 8
 
 ## Section 14: Discrete Structures — Set Operations (58–63)
 
-**Use these sets for questions 58–63:**
-U (Universal Set) = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-C = {2, 4, 6, 8, 10}
-D = {4, 8, 12}
+**Given sets for questions 58–63:**
+- Universal Set U = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+- Set C = {2, 4, 6, 8, 10}
+- Set D = {4, 8, 12}
 
-**58.** What is C ∪ D?
+**58.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is C ∪ D?
 A. {2,4,6,8,10,12}
 B. {4,8}
 C. {2,6,10}
 D. {12}
 
-**59.** What is C ∩ D?
+**59.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is C ∩ D?
 A. {4,8}
 B. {2,6,10}
 C. {12}
 D. { } (empty set)
 
-**60.** What is C − D?
+**60.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is C − D?
 A. {2,6,10}
 B. {4,8}
 C. {12}
 D. {2,4,6,8,10}
 
-**61.** What is D − C?
+**61.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is D − C?
 A. {12}
 B. {2,6,10}
 C. {4,8}
 D. { }
 
-**62.** What is D′ (the complement of D)?
+**62.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is D′ (the complement of D)?
 A. {1,2,3,5,6,7,9,10,11}
 B. {4,8,12}
 C. {2,4,6,8,10}
 D. { }
 
-**63.** What is |C ∪ D| (the cardinality of C ∪ D)?
+**63.** Given U = {1..12}, C = {2,4,6,8,10}, and D = {4,8,12}, what is |C ∪ D| (the cardinality of C ∪ D)?
 A. 6
 B. 5
+C. 8
+D. 7
 C. 8
 D. 7
 
