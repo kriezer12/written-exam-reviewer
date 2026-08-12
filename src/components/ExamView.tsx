@@ -39,6 +39,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
 }) => {
   const [showGridDrawer, setShowGridDrawer] = useState(false);
   const [showCalculationHelper, setShowCalculationHelper] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   const currentQ = questions[currentIndex];
   if (!currentQ) return null;
@@ -72,7 +73,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
               title="Toggle worked solution / scratch calculation steps"
             >
               <Calculator size={16} />
-              <span>{showCalculationHelper ? 'Hide Calculation' : 'View Calc Steps'}</span>
+              <span>{showCalculationHelper ? 'Hide Calc' : 'View Calc Steps'}</span>
             </button>
           )}
 
@@ -83,6 +84,22 @@ export const ExamView: React.FC<ExamViewProps> = ({
           >
             <Flag size={16} fill={isFlagged ? 'currentColor' : 'none'} />
             <span>{isFlagged ? 'Flagged' : 'Flag'}</span>
+          </button>
+
+          {/* Submit Full Exam Button relocated right beside Flag */}
+          <button
+            onClick={() => setShowSubmitConfirm(true)}
+            className="btn btn-sm"
+            style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              color: '#10b981',
+              fontWeight: 600,
+            }}
+            title="Submit full exam session"
+          >
+            <Send size={15} />
+            <span>Submit Full Exam</span>
           </button>
 
           <button
@@ -103,6 +120,57 @@ export const ExamView: React.FC<ExamViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Confirmation Modal for Submitting Exam */}
+      {showSubmitConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+          padding: '16px'
+        }}>
+          <div className="glass-panel animate-fade-in" style={{ maxWidth: '440px', width: '100%', padding: '28px', textAlign: 'center', border: '1px solid var(--accent-primary)' }}>
+            <Send size={36} color="#10b981" style={{ margin: '0 auto 12px' }} />
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 8px' }}>
+              Submit Full Exam?
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px', lineHeight: 1.5 }}>
+              You have answered <strong>{answeredCount}</strong> of <strong>{totalQuestions}</strong> questions.
+              {answeredCount < totalQuestions && (
+                <span style={{ display: 'block', marginTop: '6px', color: '#fbbf24', fontWeight: 600 }}>
+                  ⚠️ You still have {totalQuestions - answeredCount} unanswered questions!
+                </span>
+              )}
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowSubmitConfirm(false)}
+                className="btn btn-secondary"
+              >
+                Keep Reviewing
+              </button>
+              <button
+                onClick={() => {
+                  setShowSubmitConfirm(false);
+                  onSubmitExam();
+                }}
+                className="btn btn-primary"
+                style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+              >
+                Yes, Submit Exam
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Question Drawer Matrix Popup */}
       {showGridDrawer && (
@@ -277,7 +345,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
         </div>
       </div>
 
-      {/* Navigation & Submit Bar */}
+      {/* Navigation Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <button
           onClick={() => onNavigateIndex(currentIndex - 1)}
@@ -289,26 +357,19 @@ export const ExamView: React.FC<ExamViewProps> = ({
           <span>Previous</span>
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={onSubmitExam}
-            className="btn btn-primary"
-            style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-          >
-            <Send size={18} />
-            <span>Submit Exam ({answeredCount}/{totalQuestions})</span>
-          </button>
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+          Answered: {answeredCount}/{totalQuestions}
+        </span>
 
-          <button
-            onClick={() => onNavigateIndex(currentIndex + 1)}
-            disabled={currentIndex === totalQuestions - 1}
-            className="btn btn-secondary"
-            style={{ opacity: currentIndex === totalQuestions - 1 ? 0.5 : 1 }}
-          >
-            <span>Next</span>
-            <ChevronRight size={18} />
-          </button>
-        </div>
+        <button
+          onClick={() => onNavigateIndex(currentIndex + 1)}
+          disabled={currentIndex === totalQuestions - 1}
+          className="btn btn-primary"
+          style={{ opacity: currentIndex === totalQuestions - 1 ? 0.5 : 1 }}
+        >
+          <span>Next</span>
+          <ChevronRight size={18} />
+        </button>
       </div>
 
     </div>
