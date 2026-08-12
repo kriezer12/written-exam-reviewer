@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -41,6 +41,34 @@ export const ExamView: React.FC<ExamViewProps> = ({
   const [showCalculationHelper, setShowCalculationHelper] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
+  const totalQuestions = questions.length;
+
+  // Spacebar and Arrow key navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      const tagName = activeElement?.tagName.toLowerCase();
+      if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' || showSubmitConfirm) {
+        return;
+      }
+
+      if (e.code === 'Space' || e.key === ' ' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (currentIndex < totalQuestions - 1) {
+          onNavigateIndex(currentIndex + 1);
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          onNavigateIndex(currentIndex - 1);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, totalQuestions, onNavigateIndex, showSubmitConfirm]);
+
   const currentQ = questions[currentIndex];
   if (!currentQ) return null;
 
@@ -48,7 +76,6 @@ export const ExamView: React.FC<ExamViewProps> = ({
   const isFlagged = !!flagged[currentQ.id];
   const selectedAnswer = answers[currentQ.id];
 
-  const totalQuestions = questions.length;
   const answeredCount = Object.keys(answers).length;
 
   return (

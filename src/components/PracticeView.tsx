@@ -89,6 +89,32 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
     }
   }, [selectedCategory, filterMode, currentQ?.id, userSelections]);
 
+  // Spacebar and Arrow key navigation for Practice mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      const tagName = activeElement?.tagName.toLowerCase();
+      if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+        return;
+      }
+
+      if (e.code === 'Space' || e.key === ' ' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (activeIndex < filteredQuestions.length - 1) {
+          setActiveQuestionId(filteredQuestions[activeIndex + 1].id);
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (activeIndex > 0) {
+          setActiveQuestionId(filteredQuestions[activeIndex - 1].id);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeIndex, filteredQuestions]);
+
   const categories: QuestionCategory[] = Array.from(new Set(QUESTIONS.map((q) => q.category)));
 
   const handleSelectOption = (key: 'A' | 'B' | 'C' | 'D') => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   RotateCw, 
   CheckCircle2, 
@@ -39,10 +39,6 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
   const knownCount = Object.values(ratings).filter((r) => r === 'known').length;
   const reviewCount = Object.values(ratings).filter((r) => r === 'review').length;
 
-  if (!currentQ || filteredQuestions.length === 0) return null;
-
-  const currentRating = ratings[currentQ.id];
-
   const handleNext = () => {
     setIsFlipped(false);
     setCurrentIndex((prev) => (prev + 1) % filteredQuestions.length);
@@ -52,6 +48,35 @@ export const FlashcardView: React.FC<FlashcardViewProps> = ({
     setIsFlipped(false);
     setCurrentIndex((prev) => (prev - 1 + filteredQuestions.length) % filteredQuestions.length);
   };
+
+  // Keyboard navigation for Flashcards
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      const tagName = activeElement?.tagName.toLowerCase();
+      if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+        return;
+      }
+
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        setIsFlipped((prev) => !prev);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [filteredQuestions.length]);
+
+  if (!currentQ || filteredQuestions.length === 0) return null;
+
+  const currentRating = ratings[currentQ.id];
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
