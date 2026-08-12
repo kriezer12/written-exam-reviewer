@@ -58,14 +58,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+    <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', minHeight: '60px' }}>
         
         {/* Brand / Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => handleNavClick('exam')}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flexShrink: 0 }} onClick={() => handleNavClick('exam')}>
           <div style={{
-            width: '38px',
-            height: '38px',
+            width: '36px',
+            height: '36px',
             borderRadius: '10px',
             background: 'var(--accent-gradient)',
             display: 'flex',
@@ -74,13 +74,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             boxShadow: '0 4px 12px var(--accent-glow)',
             flexShrink: 0
           }}>
-            <Award size={22} color="#ffffff" />
+            <Award size={20} color="#ffffff" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              IT Exam Reviewer <span className="badge badge-indigo" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>{setBadgeLabel}</span>
+            <h1 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+              IT Exam Reviewer <span className="badge badge-indigo desktop-only" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>{setBadgeLabel}</span>
             </h1>
-            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: 0 }}>
+            <p className="desktop-only" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: 0 }}>
               Mock Exam • Local-First
             </p>
           </div>
@@ -183,13 +183,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right Header Section: Timer, Progress & Theme/Menu Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {isTimedExam && currentMode === 'exam' && (
             <div 
               className={`badge ${isTimeLow ? 'badge-danger pulse-glow' : 'badge-indigo'}`}
-              style={{ padding: '6px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ padding: '4px 8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
-              <Clock size={14} />
+              <Clock size={13} />
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
                 {formatTime(timeRemainingSeconds)}
               </span>
@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onToggleTheme}
             className="btn btn-ghost btn-sm"
             title="Toggle Light/Dark Theme"
-            style={{ borderRadius: '50%', width: '38px', height: '38px', padding: 0 }}
+            style={{ borderRadius: '50%', width: '36px', height: '36px', padding: 0 }}
           >
             {preferences.theme === 'dark' ? <Sun size={18} color="#f59e0b" /> : <Moon size={18} color="#6366f1" />}
           </button>
@@ -221,10 +221,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="btn btn-secondary btn-sm mobile-only"
-            title="Open Mobile Navigation Menu"
-            style={{ width: '40px', height: '40px', padding: 0 }}
+            title="Toggle Mobile Navigation Menu"
+            style={{ width: '38px', height: '38px', padding: 0 }}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
@@ -237,14 +237,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '6px',
+            gap: '8px',
             background: 'var(--bg-secondary)',
-            padding: '12px',
-            borderRadius: 'var(--radius-sm)',
+            padding: '14px',
+            borderRadius: 'var(--radius-md)',
             border: '1px solid var(--border-highlight)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
-              <Library size={16} /> Select Question Set:
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
+                <Library size={16} /> Active Question Set:
+              </div>
+              <span className="badge badge-indigo">{setBadgeLabel}</span>
             </div>
             <select
               value={selectedSet}
@@ -258,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 color: 'var(--text-primary)',
                 fontWeight: 700,
                 fontSize: '0.9rem',
-                padding: '10px',
+                padding: '10px 12px',
                 borderRadius: '8px',
                 width: '100%',
                 outline: 'none',
@@ -271,12 +274,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             </select>
           </div>
 
+          {/* Navigation Section Header */}
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+            Select Mode:
+          </div>
+
           {/* Mobile Navigation Links */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               onClick={() => handleNavClick('exam')}
               className={`btn ${currentMode === 'exam' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px', fontSize: '0.95rem' }}
             >
               <Clock size={18} />
               <span>Mock Exam Session</span>
@@ -285,7 +293,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => handleNavClick('practice')}
               className={`btn ${currentMode === 'practice' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px', fontSize: '0.95rem' }}
             >
               <Zap size={18} />
               <span>Practice Mode</span>
@@ -294,16 +302,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => handleNavClick('flashcards')}
               className={`btn ${currentMode === 'flashcards' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px', fontSize: '0.95rem' }}
             >
               <Layers size={18} />
-              <span>Flashcards</span>
+              <span>Rapid Flashcards</span>
             </button>
 
             <button
               onClick={() => handleNavClick('bookmarks')}
               className={`btn ${currentMode === 'bookmarks' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ justifyContent: 'space-between', width: '100%', padding: '12px 16px' }}
+              style={{ justifyContent: 'space-between', width: '100%', padding: '12px 16px', fontSize: '0.95rem' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Bookmark size={18} />
@@ -319,7 +327,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => handleNavClick('analytics')}
               className={`btn ${currentMode === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px' }}
+              style={{ justifyContent: 'flex-start', width: '100%', padding: '12px 16px', fontSize: '0.95rem' }}
             >
               <BarChart3 size={18} />
               <span>Analytics & Progress</span>
@@ -332,6 +340,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 justifyContent: 'flex-start', 
                 width: '100%', 
                 padding: '12px 16px',
+                fontSize: '0.95rem',
                 background: currentMode === 'hands-on' ? 'linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%)' : undefined 
               }}
             >
@@ -348,7 +357,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               borderRadius: 'var(--radius-sm)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '6px'
+              gap: '6px',
+              marginTop: '8px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
                 <span>Exam Progress</span>
@@ -364,5 +374,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+
 
 
