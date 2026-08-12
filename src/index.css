@@ -300,3 +300,105 @@ code, pre {
 .pulse-glow {
   animation: pulseGlow 2.5s infinite;
 }
+
+/* ════════════════════════════════════════
+   Hands-on Exam Styles
+   ════════════════════════════════════════ */
+
+/* Data Table */
+.hands-on-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+
+.hands-on-table thead th {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  padding: 10px 14px;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+  text-align: left;
+  position: sticky;
+  top: 0;
+}
+
+.hands-on-table thead th:first-child {
+  border-radius: var(--radius-sm) 0 0 0;
+}
+
+.hands-on-table thead th:last-child {
+  border-radius: 0 var(--radius-sm) 0 0;
+}
+
+.hands-on-table tbody td {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.hands-on-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.hands-on-table tbody tr:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.hands-on-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.hands-on-table tbody tr:nth-child(even):hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+/* ERD Canvas */
+.erd-canvas {
+  background-image:
+    radial-gradient(circle, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Code Editor Textarea Selection */
+textarea::selection {
+  background: rgba(99, 102, 241, 0.35);
+}
+
+textarea::-moz-selection {
+  background: rgba(99, 102, 241, 0.35);
+}
+
+/* Responsive Grid for OOP Section */
+@media (max-width: 768px) {
+  .hands-on-oop-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Smooth entrance for validation feedback */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in-up {
+  animation: slideInUp 0.35s ease-out forwards;
+}
+
+/* Glow effect for valid normalization steps */
+@keyframes successGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.45); }
+}
+
+.success-glow {
+  animation: successGlow 2s infinite;
+}

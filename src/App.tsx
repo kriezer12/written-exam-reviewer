@@ -5,6 +5,7 @@ import { PracticeView } from './components/PracticeView';
 import { FlashcardView } from './components/FlashcardView';
 import { ResultsView } from './components/ResultsView';
 import { AnalyticsView } from './components/AnalyticsView';
+import { HandsOnExamView } from './components/HandsOnExamView';
 import { QUESTIONS, getQuestionsForSet } from './data/questions';
 import { ExamHistoryRecord, ExamState, QuestionSetId, ReviewMode, UserPreferences } from './types/exam';
 import { 
@@ -319,6 +320,10 @@ export const App: React.FC = () => {
             }}
             onRemoveBookmark={(id) => handleToggleBookmark(id)}
           />
+        )}
+
+        {currentMode === 'hands-on' && (
+          <HandsOnExamView />
         )}
       </main>
     </div>

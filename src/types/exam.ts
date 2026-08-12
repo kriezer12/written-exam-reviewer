@@ -54,7 +54,7 @@ export interface Question {
   hasMath?: boolean;
 }
 
-export type ReviewMode = 'exam' | 'practice' | 'flashcards' | 'analytics' | 'bookmarks';
+export type ReviewMode = 'exam' | 'practice' | 'flashcards' | 'analytics' | 'bookmarks' | 'hands-on';
 
 export interface ExamState {
   mode: ReviewMode;

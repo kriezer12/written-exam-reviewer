@@ -9,7 +9,8 @@ import {
   Moon, 
   Award,
   Zap,
-  Library
+  Library,
+  Wrench
 } from 'lucide-react';
 import { QuestionSetId, ReviewMode, UserPreferences } from '../types/exam';
 import { formatTime } from '../utils/analytics';
@@ -157,6 +158,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <BarChart3 size={16} />
               <span>Analytics</span>
+            </button>
+
+            <button
+              onClick={() => onSelectMode('hands-on')}
+              className={`btn btn-sm ${currentMode === 'hands-on' ? 'btn-primary' : 'btn-ghost'}`}
+              style={currentMode === 'hands-on' ? { background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%)' } : {}}
+            >
+              <Wrench size={16} />
+              <span>Hands-on</span>
             </button>
           </nav>
         </div>
