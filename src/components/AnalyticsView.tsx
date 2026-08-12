@@ -121,7 +121,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>Filter Analytics by Question Set:</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button
             onClick={() => { setFilterSet('set_a'); onSelectSet('set_a'); }}
             className={`btn btn-sm ${filterSet === 'set_a' ? 'btn-primary' : 'btn-ghost'}`}
@@ -134,6 +134,13 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             className={`btn btn-sm ${filterSet === 'set_b' ? 'btn-primary' : 'btn-ghost'}`}
           >
             📕 Set B (100 Items)
+          </button>
+
+          <button
+            onClick={() => { setFilterSet('set_c'); onSelectSet('set_c'); }}
+            className={`btn btn-sm ${filterSet === 'set_c' ? 'btn-primary' : 'btn-ghost'}`}
+          >
+            📗 Set C (100 Items)
           </button>
 
           <button
@@ -155,7 +162,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             {totalAttempts}
           </h3>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {filterSet === 'set_a' ? 'Set A Exams' : filterSet === 'set_b' ? 'Set B Exams' : 'All Mock Exams'}
+            {filterSet === 'set_a' ? 'Set A Exams' : filterSet === 'set_b' ? 'Set B Exams' : filterSet === 'set_c' ? 'Set C Exams' : 'All Mock Exams'}
           </span>
         </div>
 

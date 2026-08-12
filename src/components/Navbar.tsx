@@ -46,7 +46,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const setBadgeLabel = 
     selectedSet === 'set_a' ? 'SET A (100)' :
-    selectedSet === 'set_b' ? 'SET B (100)' : 'ALL (200)';
+    selectedSet === 'set_b' ? 'SET B (100)' :
+    selectedSet === 'set_c' ? 'SET C (100)' : 'ALL (300)';
 
   return (
     <header className="glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', position: 'sticky', top: 0, zIndex: 50 }}>
@@ -108,7 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <option value="set_a" style={{ background: 'var(--bg-primary)' }}>📘 Set A (100 Items)</option>
               <option value="set_b" style={{ background: 'var(--bg-primary)' }}>📕 Set B (100 Items)</option>
-              <option value="all" style={{ background: 'var(--bg-primary)' }}>📚 All Sets (200 Items)</option>
+              <option value="set_c" style={{ background: 'var(--bg-primary)' }}>📗 Set C (100 Items)</option>
+              <option value="all" style={{ background: 'var(--bg-primary)' }}>📚 All Sets (300 Items)</option>
             </select>
           </div>
 

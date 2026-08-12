@@ -142,8 +142,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const handleJumpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const num = parseInt(jumpInput, 10);
-    if (!isNaN(num) && num >= 1 && num <= 100) {
-      handleJumpToId(num);
+    if (!isNaN(num)) {
+      const match = setQuestions.find((q) => q.numberInSet === num || q.id === num);
+      if (match) {
+        handleJumpToId(match.id);
+      }
     }
   };
 
@@ -159,7 +162,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
           onClick={() => {
             setSelectedCategory('ALL');
             setFilterMode('all');
-            setActiveQuestionId(1);
+            setActiveQuestionId(setQuestions[0]?.id || 1);
           }}
           className="btn btn-primary"
         >
@@ -186,7 +189,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               Practice Mode <span className="badge badge-indigo">Saved Position</span>
             </h2>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Item {currentQ.id} of 100 ({activeIndex + 1} of {filteredQuestions.length} in filter)
+              Item {currentQ.numberInSet || currentQ.id} of {setQuestions.length} ({activeIndex + 1} of {filteredQuestions.length} in filter)
             </span>
           </div>
         </div>
@@ -200,8 +203,8 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               <input
                 type="number"
                 min="1"
-                max="100"
-                placeholder="Jump # (1-100)"
+                max={setQuestions.length}
+                placeholder={`Jump # (1-${setQuestions.length})`}
                 value={jumpInput}
                 onChange={(e) => setJumpInput(e.target.value)}
                 style={{

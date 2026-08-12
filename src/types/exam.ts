@@ -31,12 +31,12 @@ export type MainDomain =
   | 'Web Development'
   | 'Human-Computer Interaction';
 
-export type QuestionSetId = 'set_a' | 'set_b' | 'all';
+export type QuestionSetId = 'set_a' | 'set_b' | 'set_c' | 'all';
 
 export interface Question {
   id: number;
   numberInSet?: number;
-  setId?: 'set_a' | 'set_b';
+  setId?: 'set_a' | 'set_b' | 'set_c';
   section: string;
   category: QuestionCategory;
   domain: MainDomain;
